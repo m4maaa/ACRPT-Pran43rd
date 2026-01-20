@@ -71,15 +71,15 @@ th{background:#c8e6c9;}
 
 <label>เลือกสถานี</label>
 <select id="station" onchange="render()">
-  <option value="s1">สถานีที่ 1 งอเข่าครึ่งนั่ง ยกบาร์น้ำหนัก</option>
-  <option value="s2">สถานีที่ 2 ย่อตัวทุ่มน้ำหนักไปด้านหลัง</option>
-  <option value="s3">สถานีที่ 3 ดันพื้นละมือกางแขน</option>
-  <option value="s4">สถานีที่ 4 วิ่งไป-กลับ ลากและยกสิ่งของ</option>
-  <option value="s5">สถานีที่ 5 กระดานคว่ำ</option>
-  <option value="s6">สถานีที่ 6 วิ่ง 2 กิโลเมตร</option>
+  <option value="s1">สถานี งอเข่าครึ่งนั่ง ยกบาร์น้ำหนัก</option>
+  <option value="s2">สถานี ย่อตัวทุ่มน้ำหนักไปด้านหลัง</option>
+  <option value="s3">สถานี ดันพื้นละมือกางแขน</option>
+  <option value="s4">สถานี วิ่งไป-กลับ ลากและยกสิ่งของ</option>
+  <option value="s5">สถานี กระดานคว่ำ</option>
+  <option value="s6">สถานี วิ่ง 2 กิโลเมตร</option>
 </select>
 
-<label>กรอกอายุผู้เข้ารับการทดสอบ (ปี)</label>
+<label>อายุผู้เข้ารับการทดสอบ (ปี)</label>
 <input type="number" id="age" oninput="render()">
 
 <div id="result"></div>
@@ -149,7 +149,7 @@ function render(){
  if(!age){out.innerHTML="";return;}
  const idx=ageGroups.findIndex(g=>age>=g[0]&&age<=g[1]);
  if(idx<0){out.innerHTML="<p style='color:red'>อายุอยู่นอกเกณฑ์</p>";return;}
- let html="<table><tr><th>เปอร์เซ็นต์ผ่านเกณฑ์</th><th>คะแนน/เวลา</th></tr>";
+ let html="<table><tr><th>เปอร์เซ็นต์ผ่านเกณฑ์</th><th>จำนวน/เวลา</th></tr>";
  for(let k in data[st].values){
   let cls=k==="ไม่ผ่านเกณฑ์"?"fail":k==="เกณฑ์ผ่าน 70%"?"p70":k==="เกณฑ์ผ่าน 80%"?"p80":k==="เกณฑ์ผ่าน 90%"?"p90":"p100";
   html+=`<tr><td class="${cls}">${k}</td><td>${data[st].values[k][idx]}</td></tr>`;
@@ -160,4 +160,5 @@ function render(){
 </script>
 </body>
 </html>
+
 
