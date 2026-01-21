@@ -4,13 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>เกณฑ์การทดสอบสมรรถภาพร่างกาย 2569</title>
+
 <style>
+/* ===============================
+   Base Layout
+=============================== */
 html, body{
   margin:0;
   padding:0;
   height:100%;
-  overflow:hidden;
+  overflow:hidden; /* ล็อคหน้าจอ */
 }
+
 body{
   font-family:"Segoe UI",Tahoma,sans-serif;
   background:#ffffff;
@@ -25,20 +30,28 @@ body{
 }
 .card{
   width:100%;
-  height:100%;
+  min-height:100dvh;   /* ⭐ เต็มจอจริง */
   box-sizing:border-box;
   padding:12px;
   background:#ffffff;
 }
+/* ===============================
+   Developer Control
+=============================== */
 :root{
-  --level-alpha: 0.35;
+  --level-alpha: 0.35; /* ⭐ ปรับความเข้มสี (0.2 – 0.6) */
 }
+
+/* ===============================
+   Table (Result)
+=============================== */
 table{
   width:100%;
   margin-top:14px;
   border-collapse:collapse;
-  table-layout:fixed;
+  table-layout:fixed; /* ⭐ ทำให้แบ่ง 50/50 จริง */
 }
+
 th, td{
   border:1px solid #ccc;
   padding:8px;
@@ -46,15 +59,20 @@ th, td{
   white-space:nowrap;
   font-size:14px;
 }
+
 th{
   background:#c8e6c9;
 }
+
+/* บังคับคอลัมน์เท่ากันจริง */
 th:nth-child(1),
 td:nth-child(1),
 th:nth-child(2),
 td:nth-child(2){
   width:50%;
 }
+
+/* ===== ระบายสีทั้งแถว (ซ้าย + ขวา) ===== */
 tr.fail  td{ background: rgba(244, 67, 54, var(--level-alpha)); }
 tr.p70   td{ background: rgba(76, 175, 80, var(--level-alpha)); }
 tr.p80   td{ background: rgba(33, 150, 243, var(--level-alpha)); }
@@ -63,18 +81,26 @@ tr.p100  td{
   background: rgba(46, 125, 50, calc(var(--level-alpha) + 0.1));
   font-weight:700;
 }
+
+/* เส้นแบ่งกลาง */
 tr td:last-child{
   border-left:4px solid rgba(0,0,0,0.25);
 }
+/* ===============================
+   Result Area (เลื่อนได้เอง)
+=============================== */
 .result-wrap{
   margin-top:10px;
   height:calc(100vh - 320px); 
   /* 320px ≈ ความสูง picker + label */
   overflow-y:auto;
 }
+/* ===============================
+   Picker (Station / Age)
+=============================== */
 .picker{
   position:relative;
-  height:96px;
+  height:120px;  /* ⭐ เลื่อนลื่นขึ้น เหมาะกับนิ้ว */
   overflow-y:auto;
   scroll-snap-type:y mandatory;
   border-radius:12px;
@@ -82,8 +108,10 @@ tr td:last-child{
   border:1px solid #a5d6a7;
   cursor:grab;
 }
+
 .picker.dragging{ cursor:grabbing; }
 .picker::-webkit-scrollbar{ display:none; }
+
 .picker-item,
 .picker-spacer{
   height:38px;
@@ -92,22 +120,33 @@ tr td:last-child{
   justify-content:center;
   scroll-snap-align:center;
 }
+
 .picker-item{
   font-size:15px;
   color:#666;
   user-select:none;
 }
+
 .picker-item.active{
   background:rgba(255,255,255,.95);
   color:#1b5e20;
   font-weight:700;
+
+  /* ⭐ iOS magnify effect */
+  font-size:18px;              /* จากเดิม ~15px */
+  transform:scale(1.12);       /* ขยายเฉพาะตัวที่เลือก */
+  line-height:1;               /* กันบังบรรทัดล่าง */
+
   border-radius:8px;
   position:relative;
-  z-index:2;
+  z-index:3;
+
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.8),
-    0 2px 6px rgba(0,0,0,.12);
+    0 3px 8px rgba(0,0,0,.15);
 }
+
+
 /* ไล่เฉดบน–ล่าง (ไม่บังข้อมูล) */
 .picker::before,
 .picker::after{
@@ -118,38 +157,51 @@ tr td:last-child{
   pointer-events:none;
   z-index:1;
 }
+
 .picker::before{
   top:0;
   background:linear-gradient(to bottom,#e3f3e8,transparent);
 }
+
 .picker::after{
   bottom:0;
   background:linear-gradient(to top,#e3f3e8,transparent);
 }
+
+/* ❌ ไม่ให้ลากเลือกข้อความ */
 .picker,
 .picker *{
   user-select:none;
   -webkit-user-select:none;
 }
+
 </style>
 </head>
+
 <body>
 <div class="card">
+
   <!-- Picker สถานี (ไม่มี label) -->
 <div class="picker" id="stationPicker">
   <div class="picker-spacer"></div>
+
   <div class="picker-item" data-value="s1">สถานีที่ 1 งอเข่าครึ่งนั่ง ยกบาร์น้ำหนัก</div>
   <div class="picker-item" data-value="s2">สถานีที่ 2 ย่อตัวทุ่มน้ำหนักไปด้านหลัง</div>
   <div class="picker-item" data-value="s3">สถานีที่ 3 ดันพื้นละมือกางแขน</div>
   <div class="picker-item" data-value="s4">สถานีที่ 4 วิ่งไป-กลับ ลากและยกสิ่งของ</div>
   <div class="picker-item" data-value="s5">สถานีที่ 5 กระดานคว่ำ</div>
   <div class="picker-item" data-value="s6">สถานีที่ 6 วิ่ง 2 กิโลเมตร</div>
+
   <!-- spacer ล่าง -->
   <div class="picker-spacer"></div>
+
 </div>
+
 <!-- ค่าที่เลือกจริง (ซ่อน) -->
 <input type="hidden" id="station" value="s1">
+
 <label class="age-label">อายุผู้เข้ารับการทดสอบ</label>
+
 <div style="display:flex; gap:10px;">
   <!-- หลักสิบ -->
   <div class="picker" id="ageTensPicker" style="flex:1;">
@@ -162,6 +214,7 @@ tr td:last-child{
     <div class="picker-item" data-value="6">6</div>
     <div class="picker-spacer"></div>
   </div>
+
   <!-- หลักหน่วย -->
   <div class="picker" id="ageOnesPicker" style="flex:1;">
     <div class="picker-spacer"></div>
@@ -178,13 +231,21 @@ tr td:last-child{
     <div class="picker-spacer"></div>
   </div>
 </div>
+
 <input type="hidden" id="age" value="">
+
 <div class="result-wrap">
   <div id="result"></div>
 </div>
+
 <link rel="manifest" href="manifest.json">
+
 </div>
+
 <script>
+/* ==================================================
+   1) Utilities
+================================================== */
 function enableMouseDrag(p){
   let down=false,y,s;
   p.addEventListener("mousedown",e=>{
@@ -203,6 +264,7 @@ function enableMouseDrag(p){
     p.scrollTop = s - (e.pageY - y);
   });
 }
+
 function snapToActive(picker, items){
   const a = items.find(i=>i.classList.contains("active"));
   if(a){
@@ -210,13 +272,20 @@ function snapToActive(picker, items){
       a.offsetTop - picker.clientHeight/2 + a.offsetHeight/2;
   }
 }
+
+/* ==================================================
+   2) Constants / State
+================================================== */
 const ageGroups = [
   [17,21],[22,26],[27,31],[32,36],
   [37,41],[42,46],[47,51],[52,60]
 ];
+
 const hiddenAge     = document.getElementById("age");
 const hiddenStation = document.getElementById("station");
 const result        = document.getElementById("result");
+
+/* ===== ใส่ data ตรงนี้ ===== */
 const data = {
 /* ===== สถานี 1 ===== */
 s1:{unit:"น้ำหนัก",values:{
@@ -267,18 +336,24 @@ s6:{unit:"เวลา",values:{
 "เกณฑ์ผ่าน 100%":["น้อยกว่า 6.50","น้อยกว่า 7.15","น้อยกว่า 7.45","น้อยกว่า 8.15","น้อยกว่า 8.50","น้อยกว่า 9.25","น้อยกว่า 10.00","น้อยกว่า 10.35"]
 }}
 };
+/* ==================================================
+   3) Render (MATCH CSS 100%)
+================================================== */
 function render(){
   const age = +hiddenAge.value;
   const st  = hiddenStation.value;
+
   if(!age || !st || !data[st]){
     result.innerHTML = "";
     return;
   }
+
   const idx = ageGroups.findIndex(g => age >= g[0] && age <= g[1]);
   if(idx < 0){
     result.innerHTML = "";
     return;
   }
+
   let html = `
     <table>
       <tr>
@@ -293,16 +368,23 @@ function render(){
       k === "เกณฑ์ผ่าน 80%"  ? "p80"   :
       k === "เกณฑ์ผ่าน 90%"  ? "p90"   :
                                "p100";
+
     html += `
       <tr class="${cls}">
         <td>${k}</td>
         <td>${data[st].values[k][idx]}</td>
       </tr>`;
   }
+
   result.innerHTML = html + "</table>";
 }
+
+/* ==================================================
+   4) Station Picker
+================================================== */
 const sp = document.getElementById("stationPicker");
 const sItems = [...sp.querySelectorAll(".picker-item")];
+
 function syncStation(){
   const center = sp.scrollTop + sp.clientHeight / 2;
   sItems.forEach(i=>{
@@ -316,21 +398,29 @@ function syncStation(){
     }
   });
 }
+
 sp.addEventListener("scroll",()=>requestAnimationFrame(syncStation));
 sItems[0].classList.add("active");
 hiddenStation.value = sItems[0].dataset.value;
 enableMouseDrag(sp);
+
+/* ==================================================
+   5) Age Picker (17–60 lock)
+================================================== */
 const tensP = document.getElementById("ageTensPicker");
 const onesP = document.getElementById("ageOnesPicker");
 const tens  = [...tensP.querySelectorAll(".picker-item")];
 const ones  = [...onesP.querySelectorAll(".picker-item")];
+
 let t = 1, o = 7;
+
 function scrollTo(p, items, val){
   const it = items.find(x=>+x.dataset.value===val);
   if(it){
     p.scrollTop = it.offsetTop - p.clientHeight/2 + it.offsetHeight/2;
   }
 }
+
 function lockOnes(lock){
   ones.forEach(i=>{
     if(lock && i.dataset.value!=="0"){
@@ -342,13 +432,16 @@ function lockOnes(lock){
     }
   });
 }
+
 function updateAge(){
   if(t===1 && o<7){ o=7; scrollTo(onesP,ones,7); }
   if(t===6){ o=0; scrollTo(onesP,ones,0); lockOnes(true); }
   else{ lockOnes(false); }
+
   hiddenAge.value = t*10 + o;
   render();
 }
+
 function syncAge(p, items, setter){
   const center = p.scrollTop + p.clientHeight / 2;
   items.forEach(i=>{
@@ -362,11 +455,14 @@ function syncAge(p, items, setter){
     }
   });
 }
+
 tensP.addEventListener("scroll",()=>requestAnimationFrame(()=>syncAge(tensP,tens,v=>t=v)));
 onesP.addEventListener("scroll",()=>requestAnimationFrame(()=>syncAge(onesP,ones,v=>o=v)));
+
 tens[0].classList.add("active");
 ones[7].classList.add("active");
 hiddenAge.value = 17;
+
 enableMouseDrag(tensP);
 enableMouseDrag(onesP);
 render();
