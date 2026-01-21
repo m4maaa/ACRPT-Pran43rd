@@ -62,22 +62,95 @@ th{background:#c8e6c9;}
 .p80{color:#0277bd;font-weight:bold;}
 .p90{color:#6a1b9a;font-weight:bold;}
 .p100{color:#1b5e20;font-weight:bold;}
+/* ===== Picker Style ===== */
+.picker {
+  position: relative;
+  height: 160px;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  border-radius: 14px;
+  background: linear-gradient(to bottom,#f8fff9,#e3f3e8);
+  border: 1px solid #a5d6a7;
+}
+
+/* ซ่อน scrollbar */
+.picker::-webkit-scrollbar {
+  display: none;
+}
+
+.picker-item {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  scroll-snap-align: center;
+  font-size: 16px;
+  color: #777;
+  user-select: none;
+}
+
+/* ตัวที่ถูกเลือก */
+.picker-item.active {
+  background: rgba(255,255,255,0.9);
+  color: #1b5e20;
+  font-weight: bold;
+  border-radius: 10px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.8),
+    0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* เส้นไฮไลต์ตรงกลาง (Vista style) */
+.picker::before,
+.picker::after {
+  content:"";
+  position:absolute;
+  left:0; right:0;
+  height:50px;
+  pointer-events:none;
+}
+.picker::before {
+  top:0;
+  background: linear-gradient(to bottom, #e3f3e8, transparent);
+}
+.picker::after {
+  bottom:0;
+  background: linear-gradient(to top, #e3f3e8, transparent);
+}
+/* spacer บน–ล่าง สำหรับ picker */
+.picker-spacer {
+  height: 50px; /* เท่ากับ picker-item */
+  scroll-snap-align: center;
+}
+
 </style>
 </head>
 
 <body>
 <div class="card">
-<h2>เกณฑ์การทดสอบสมรรถภาพร่างกาย<br>ประจำปี 2569 (6 สถานี)</h2>
+<h2>เกณฑ์การทดสอบสมรรถภาพร่างกาย<br>(6 สถานี)</h2>
 
 <label>เลือกสถานี</label>
-<select id="station" onchange="render()">
-  <option value="s1">สถานี 1 งอเข่าครึ่งนั่ง ยกบาร์น้ำหนัก</option>
-  <option value="s2">สถานี 2 ย่อตัวทุ่มน้ำหนักไปด้านหลัง</option>
-  <option value="s3">สถานี 3 ดันพื้นละมือกางแขน</option>
-  <option value="s4">สถานี 4 วิ่งไป-กลับ ลากและยกสิ่งของ</option>
-  <option value="s5">สถานี 5 กระดานคว่ำ</option>
-  <option value="s6">สถานี 6 วิ่ง 2 กิโลเมตร</option>
-</select>
+
+<div class="picker" id="stationPicker">
+
+  <!-- spacer บน -->
+  <div class="picker-spacer"></div>
+
+  <div class="picker-item" data-value="s1">สถานีที่ 1 งอเข่าครึ่งนั่ง ยกบาร์น้ำหนัก</div>
+  <div class="picker-item" data-value="s2">สถานีที่ 2 ย่อตัวทุ่มน้ำหนักไปด้านหลัง</div>
+  <div class="picker-item" data-value="s3">สถานีที่ 3 ดันพื้นละมือกางแขน</div>
+  <div class="picker-item" data-value="s4">สถานีที่ 4 วิ่งไป-กลับ ลากและยกสิ่งของ</div>
+  <div class="picker-item" data-value="s5">สถานีที่ 5 กระดานคว่ำ</div>
+  <div class="picker-item" data-value="s6">สถานีที่ 6 วิ่ง 2 กิโลเมตร</div>
+
+  <!-- spacer ล่าง -->
+  <div class="picker-spacer"></div>
+
+</div>
+
+<!-- ค่าที่เลือกจริง (ซ่อน) -->
+<input type="hidden" id="station" value="s1">
 
 <label>อายุผู้เข้ารับการทดสอบ (ปี)</label>
 <input type="number" id="age" oninput="render()">
@@ -157,9 +230,35 @@ function render(){
  html+="</table>";
  out.innerHTML=html;
 }
+const picker = document.getElementById("stationPicker");
+const hiddenStation = document.getElementById("station");
+const items = picker.querySelectorAll(".picker-item");
+
+function updatePicker(){
+  let center = picker.scrollTop + picker.clientHeight / 2;
+
+  items.forEach(item => {
+    const itemCenter = item.offsetTop + item.offsetHeight / 2;
+    if(Math.abs(center - itemCenter) < item.offsetHeight / 2){
+      items.forEach(i => i.classList.remove("active"));
+      item.classList.add("active");
+      hiddenStation.value = item.dataset.value;
+      render(); // 🔥 เรียกของเดิม
+    }
+  });
+}
+
+picker.addEventListener("scroll", () => {
+  window.requestAnimationFrame(updatePicker);
+});
+
+// ตั้งค่าเริ่มต้น
+items[0].classList.add("active");
+
 </script>
 </body>
 </html>
+
 
 
 
