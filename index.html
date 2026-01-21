@@ -4,100 +4,119 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>เกณฑ์การทดสอบสมรรถภาพร่างกาย 2569</title>
-
 <style>
-/* ===============================
-   Base Layout
-=============================== */
-body{
-  font-family:"Segoe UI",Tahoma,sans-serif;
-  background:linear-gradient(135deg,#dff3e6,#cce8d8);
-  min-height:100vh;
-  padding:20px;
-}
-.card{
-  max-width:900px;
-  margin:auto;
-  padding:22px;
-  border-radius:16px;
-  background:rgba(255,255,255,.75);
-  backdrop-filter:blur(8px);
-  box-shadow:0 8px 24px rgba(0,0,0,.15);
-}
-
-/* ===============================
-   Table (Result)
-=============================== */
-table{
-  width:100%;
-  margin-top:18px;
-  border-collapse:collapse;
-  background:#fff;
-  border-radius:10px;
+html, body{
+  margin:0;
+  padding:0;
+  height:100%;
   overflow:hidden;
 }
-th,td{
+body{
+  font-family:"Segoe UI",Tahoma,sans-serif;
+  background:#ffffff;
+}
+.age-label{
+  display:block;
+  text-align:center;
+  margin:14px 0 8px;
+  font-weight:700;
+  font-size:16px;
+  color:#1b5e20;
+}
+.card{
+  width:100%;
+  height:100%;
+  box-sizing:border-box;
+  padding:12px;
+  background:#ffffff;
+}
+:root{
+  --level-alpha: 0.35;
+}
+table{
+  width:100%;
+  margin-top:14px;
+  border-collapse:collapse;
+  table-layout:fixed;
+}
+th, td{
   border:1px solid #ccc;
   padding:8px;
   text-align:center;
   white-space:nowrap;
   font-size:14px;
 }
-th{background:#c8e6c9}
-
-.fail  {background:#fdecea}
-.p70   {background:#e8f5e9}
-.p80   {background:#e3f2fd}
-.p90   {background:#f3e5f5}
-.p100  {background:#c8e6c9;font-size:15px}
-
-/* ===============================
-   Picker (Station / Age)
-=============================== */
+th{
+  background:#c8e6c9;
+}
+th:nth-child(1),
+td:nth-child(1),
+th:nth-child(2),
+td:nth-child(2){
+  width:50%;
+}
+tr.fail  td{ background: rgba(244, 67, 54, var(--level-alpha)); }
+tr.p70   td{ background: rgba(76, 175, 80, var(--level-alpha)); }
+tr.p80   td{ background: rgba(33, 150, 243, var(--level-alpha)); }
+tr.p90   td{ background: rgba(156, 39, 176, var(--level-alpha)); }
+tr.p100  td{
+  background: rgba(46, 125, 50, calc(var(--level-alpha) + 0.1));
+  font-weight:700;
+}
+tr td:last-child{
+  border-left:4px solid rgba(0,0,0,0.25);
+}
+.result-wrap{
+  margin-top:10px;
+  height:calc(100vh - 320px); 
+  /* 320px ≈ ความสูง picker + label */
+  overflow-y:auto;
+}
 .picker{
   position:relative;
-  height:150px;
+  height:96px;
   overflow-y:auto;
   scroll-snap-type:y mandatory;
-  border-radius:14px;
+  border-radius:12px;
   background:linear-gradient(#f8fff9,#e3f3e8);
   border:1px solid #a5d6a7;
   cursor:grab;
 }
-.picker.dragging{cursor:grabbing}
-.picker::-webkit-scrollbar{display:none}
-
+.picker.dragging{ cursor:grabbing; }
+.picker::-webkit-scrollbar{ display:none; }
 .picker-item,
 .picker-spacer{
-  height:50px;
+  height:38px;
   display:flex;
   align-items:center;
   justify-content:center;
   scroll-snap-align:center;
 }
 .picker-item{
-  font-size:16px;
-  color:#777;
+  font-size:15px;
+  color:#666;
   user-select:none;
 }
 .picker-item.active{
+  background:rgba(255,255,255,.95);
   color:#1b5e20;
   font-weight:700;
-  background:rgba(255,255,255,.9);
-  border-radius:10px;
+  border-radius:8px;
+  position:relative;
+  z-index:2;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.8),
-    0 4px 12px rgba(0,0,0,.15);
+    0 2px 6px rgba(0,0,0,.12);
 }
-
-/* Center highlight (Vista style) */
+/* ไล่เฉดบน–ล่าง (ไม่บังข้อมูล) */
 .picker::before,
 .picker::after{
   content:"";
   position:absolute;
-  left:0;right:0;
-  height:50px;
+  left:0; right:0;
+  height:32px;
   pointer-events:none;
+  z-index:1;
 }
 .picker::before{
   top:0;
@@ -107,50 +126,30 @@ th{background:#c8e6c9}
   bottom:0;
   background:linear-gradient(to top,#e3f3e8,transparent);
 }
-
-/* ===============================
-   Alert
-=============================== */
-.alert{
-  margin-top:18px;
-  padding:14px;
-  border-radius:10px;
-  text-align:center;
-  font-weight:700;
+.picker,
+.picker *{
+  user-select:none;
+  -webkit-user-select:none;
 }
-.alert-error{
-  color:#b71c1c;
-  background:#fdecea;
-  border:1px solid #f5c6cb;
-}
-
 </style>
 </head>
-
 <body>
 <div class="card">
-
   <!-- Picker สถานี (ไม่มี label) -->
 <div class="picker" id="stationPicker">
   <div class="picker-spacer"></div>
-
   <div class="picker-item" data-value="s1">สถานีที่ 1 งอเข่าครึ่งนั่ง ยกบาร์น้ำหนัก</div>
   <div class="picker-item" data-value="s2">สถานีที่ 2 ย่อตัวทุ่มน้ำหนักไปด้านหลัง</div>
   <div class="picker-item" data-value="s3">สถานีที่ 3 ดันพื้นละมือกางแขน</div>
   <div class="picker-item" data-value="s4">สถานีที่ 4 วิ่งไป-กลับ ลากและยกสิ่งของ</div>
   <div class="picker-item" data-value="s5">สถานีที่ 5 กระดานคว่ำ</div>
   <div class="picker-item" data-value="s6">สถานีที่ 6 วิ่ง 2 กิโลเมตร</div>
-
   <!-- spacer ล่าง -->
   <div class="picker-spacer"></div>
-
 </div>
-
 <!-- ค่าที่เลือกจริง (ซ่อน) -->
 <input type="hidden" id="station" value="s1">
-
-<label>อายุผู้เข้ารับการทดสอบ</label>
-
+<label class="age-label">อายุผู้เข้ารับการทดสอบ</label>
 <div style="display:flex; gap:10px;">
   <!-- หลักสิบ -->
   <div class="picker" id="ageTensPicker" style="flex:1;">
@@ -163,7 +162,6 @@ th{background:#c8e6c9}
     <div class="picker-item" data-value="6">6</div>
     <div class="picker-spacer"></div>
   </div>
-
   <!-- หลักหน่วย -->
   <div class="picker" id="ageOnesPicker" style="flex:1;">
     <div class="picker-spacer"></div>
@@ -180,53 +178,31 @@ th{background:#c8e6c9}
     <div class="picker-spacer"></div>
   </div>
 </div>
-
 <input type="hidden" id="age" value="">
-<div id="summary" style="
-  text-align:center;
-  font-size:14px;
-  color:#555;
-  margin-top:10px;
-"></div>
-
-<div id="result"></div>
-<button id="resetBtn" style="
-  position:fixed;
-  right:16px;
-  bottom:16px;
-  padding:10px 14px;
-  border-radius:50%;
-  border:none;
-  background:#4caf50;
-  color:white;
-  font-size:14px;
-">
-↺
-</button>
-<link rel="manifest" href="manifest.json">
-
+<div class="result-wrap">
+  <div id="result"></div>
 </div>
-
+<link rel="manifest" href="manifest.json">
+</div>
 <script>
-/* ==================================================
-   1) Utilities
-================================================== */
 function enableMouseDrag(p){
   let down=false,y,s;
   p.addEventListener("mousedown",e=>{
-    down=true;p.classList.add("dragging");
-    y=e.pageY-p.offsetTop;s=p.scrollTop;
+    down=true;
+    p.classList.add("dragging");
+    y=e.pageY;
+    s=p.scrollTop;
   });
-  ["mouseup","mouseleave"].forEach(ev=>{
-    document.addEventListener(ev,()=>{down=false;p.classList.remove("dragging");});
+  document.addEventListener("mouseup",()=>{
+    down=false;
+    p.classList.remove("dragging");
   });
   p.addEventListener("mousemove",e=>{
-    if(!down)return;
+    if(!down) return;
     e.preventDefault();
-    p.scrollTop=s-(e.pageY-p.offsetTop-y);
+    p.scrollTop = s - (e.pageY - y);
   });
 }
-
 function snapToActive(picker, items){
   const a = items.find(i=>i.classList.contains("active"));
   if(a){
@@ -234,22 +210,14 @@ function snapToActive(picker, items){
       a.offsetTop - picker.clientHeight/2 + a.offsetHeight/2;
   }
 }
-
-/* ==================================================
-   2) Constants / State
-================================================== */
-const ageGroups=[
- [17,21],[22,26],[27,31],[32,36],
- [37,41],[42,46],[47,51],[52,60]
+const ageGroups = [
+  [17,21],[22,26],[27,31],[32,36],
+  [37,41],[42,46],[47,51],[52,60]
 ];
-
-const hiddenAge=document.getElementById("age");
-const hiddenStation=document.getElementById("station");
-const result=document.getElementById("result");
-const summary=document.getElementById("summary");
-
-/* ===== data s1–s6 (ของคุณเดิม) ===== */
-const data={
+const hiddenAge     = document.getElementById("age");
+const hiddenStation = document.getElementById("station");
+const result        = document.getElementById("result");
+const data = {
 /* ===== สถานี 1 ===== */
 s1:{unit:"น้ำหนัก",values:{
 "ไม่ผ่านเกณฑ์":["มากกว่า 75","มากกว่า 61","มากกว่า 67","มากกว่า 63","มากกว่า 59","มากกว่า 55","มากกว่า 51","มากกว่า 47"],
@@ -299,88 +267,70 @@ s6:{unit:"เวลา",values:{
 "เกณฑ์ผ่าน 100%":["น้อยกว่า 6.50","น้อยกว่า 7.15","น้อยกว่า 7.45","น้อยกว่า 8.15","น้อยกว่า 8.50","น้อยกว่า 9.25","น้อยกว่า 10.00","น้อยกว่า 10.35"]
 }}
 };
-
-/* ==================================================
-   3) Render (ตัวเดียวเท่านั้น)
-================================================== */
 function render(){
-  const age=+hiddenAge.value;
-  const st=hiddenStation.value;
-
+  const age = +hiddenAge.value;
+  const st  = hiddenStation.value;
   if(!age || !st || !data[st]){
-    result.innerHTML="";
+    result.innerHTML = "";
     return;
   }
-
-  const idx=ageGroups.findIndex(g=>age>=g[0]&&age<=g[1]);
-  if(idx<0){
-    result.innerHTML="";
+  const idx = ageGroups.findIndex(g => age >= g[0] && age <= g[1]);
+  if(idx < 0){
+    result.innerHTML = "";
     return;
   }
-
-  summary.textContent =
-    `สถานี ${st.replace("s","")} • อายุ ${age} ปี`;
-
-  let html=`<table>
-    <tr><th>เปอร์เซ็นต์ผ่านเกณฑ์</th><th>จำนวน/เวลา</th></tr>`;
+  let html = `
+    <table>
+      <tr>
+        <th>เปอร์เซ็นต์ผ่านเกณฑ์</th>
+        <th>จำนวน/เวลา</th>
+      </tr>`;
 
   for(const k in data[st].values){
-    const cls=
-      k==="ไม่ผ่านเกณฑ์"?"fail":
-      k==="เกณฑ์ผ่าน 70%"?"p70":
-      k==="เกณฑ์ผ่าน 80%"?"p80":
-      k==="เกณฑ์ผ่าน 90%"?"p90":"p100";
-
-    html+=`<tr>
-      <td class="${cls}">${k}</td>
-      <td>${data[st].values[k][idx]}</td>
-    </tr>`;
+    const cls =
+      k === "ไม่ผ่านเกณฑ์"   ? "fail"  :
+      k === "เกณฑ์ผ่าน 70%"  ? "p70"   :
+      k === "เกณฑ์ผ่าน 80%"  ? "p80"   :
+      k === "เกณฑ์ผ่าน 90%"  ? "p90"   :
+                               "p100";
+    html += `
+      <tr class="${cls}">
+        <td>${k}</td>
+        <td>${data[st].values[k][idx]}</td>
+      </tr>`;
   }
-
-  result.innerHTML=html+"</table>";
+  result.innerHTML = html + "</table>";
 }
-
-/* ==================================================
-   4) Station Picker
-================================================== */
-const sp=document.getElementById("stationPicker");
-const sItems=[...sp.querySelectorAll(".picker-item")];
-
+const sp = document.getElementById("stationPicker");
+const sItems = [...sp.querySelectorAll(".picker-item")];
 function syncStation(){
-  const c=sp.scrollTop+sp.clientHeight/2;
+  const center = sp.scrollTop + sp.clientHeight / 2;
   sItems.forEach(i=>{
-    if(Math.abs(c-(i.offsetTop+i.offsetHeight/2))<i.offsetHeight/2){
+    const ic = i.offsetTop + i.offsetHeight / 2;
+    if(Math.abs(center - ic) < i.offsetHeight / 2){
       sItems.forEach(x=>x.classList.remove("active"));
       i.classList.add("active");
-      hiddenStation.value=i.dataset.value;
+      hiddenStation.value = i.dataset.value;
       render();
-      setTimeout(()=>snapToActive(sp,sItems),60);
+      setTimeout(()=>snapToActive(sp,sItems),50);
     }
   });
 }
-
 sp.addEventListener("scroll",()=>requestAnimationFrame(syncStation));
 sItems[0].classList.add("active");
-hiddenStation.value=sItems[0].dataset.value;
+hiddenStation.value = sItems[0].dataset.value;
 enableMouseDrag(sp);
-
-/* ==================================================
-   5) Age Picker (2 Columns + Lock 17–60)
-================================================== */
-const tensP=document.getElementById("ageTensPicker");
-const onesP=document.getElementById("ageOnesPicker");
-const tens=[...tensP.querySelectorAll(".picker-item")];
-const ones=[...onesP.querySelectorAll(".picker-item")];
-
-let t=1,o=7;
-
-function scrollTo(p,items,val){
-  const it=items.find(x=>+x.dataset.value===val);
+const tensP = document.getElementById("ageTensPicker");
+const onesP = document.getElementById("ageOnesPicker");
+const tens  = [...tensP.querySelectorAll(".picker-item")];
+const ones  = [...onesP.querySelectorAll(".picker-item")];
+let t = 1, o = 7;
+function scrollTo(p, items, val){
+  const it = items.find(x=>+x.dataset.value===val);
   if(it){
-    p.scrollTop=it.offsetTop-p.clientHeight/2+it.offsetHeight/2;
+    p.scrollTop = it.offsetTop - p.clientHeight/2 + it.offsetHeight/2;
   }
 }
-
 function lockOnes(lock){
   ones.forEach(i=>{
     if(lock && i.dataset.value!=="0"){
@@ -392,81 +342,34 @@ function lockOnes(lock){
     }
   });
 }
-
 function updateAge(){
   if(t===1 && o<7){ o=7; scrollTo(onesP,ones,7); }
   if(t===6){ o=0; scrollTo(onesP,ones,0); lockOnes(true); }
   else{ lockOnes(false); }
-
-  hiddenAge.value=t*10+o;
+  hiddenAge.value = t*10 + o;
   render();
 }
-
-function syncAge(p,items,set){
-  const c=p.scrollTop+p.clientHeight/2;
+function syncAge(p, items, setter){
+  const center = p.scrollTop + p.clientHeight / 2;
   items.forEach(i=>{
-    if(Math.abs(c-(i.offsetTop+i.offsetHeight/2))<i.offsetHeight/2){
+    const ic = i.offsetTop + i.offsetHeight / 2;
+    if(Math.abs(center - ic) < i.offsetHeight / 2){
       items.forEach(x=>x.classList.remove("active"));
       i.classList.add("active");
-      set(+i.dataset.value);
+      setter(+i.dataset.value);
       updateAge();
-      setTimeout(()=>snapToActive(p,items),60);
+      setTimeout(()=>snapToActive(p,items),50);
     }
   });
 }
-
 tensP.addEventListener("scroll",()=>requestAnimationFrame(()=>syncAge(tensP,tens,v=>t=v)));
 onesP.addEventListener("scroll",()=>requestAnimationFrame(()=>syncAge(onesP,ones,v=>o=v)));
-
 tens[0].classList.add("active");
 ones[7].classList.add("active");
-hiddenAge.value=17;
-render();
-
+hiddenAge.value = 17;
 enableMouseDrag(tensP);
 enableMouseDrag(onesP);
-
-/* ==================================================
-   6) Optional Enhancements
-================================================== */
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("sw.js");
-}
-/* ===============================
-   Reset Button
-=============================== */
-const resetBtn = document.getElementById("resetBtn");
-
-resetBtn.addEventListener("click", () => {
-
-  /* ===== reset สถานี ===== */
-  const firstStation = sItems[0];
-  sItems.forEach(i => i.classList.remove("active"));
-  firstStation.classList.add("active");
-  hiddenStation.value = firstStation.dataset.value;
-  sp.scrollTop =
-    firstStation.offsetTop - sp.clientHeight/2 + firstStation.offsetHeight/2;
-
-  /* ===== reset อายุ = 17 ===== */
-  t = 1;
-  o = 7;
-  hiddenAge.value = 17;
-
-  tens.forEach(i => i.classList.remove("active"));
-  ones.forEach(i => i.classList.remove("active"));
-  tens[0].classList.add("active");
-  ones[7].classList.add("active");
-
-  scrollTo(tensP, tens, 1);
-  scrollTo(onesP, ones, 7);
-  lockOnes(false);
-
-  /* ===== reset ผลลัพธ์ ===== */
-  result.innerHTML = "";
-  render();
-});
-
+render();
 </script>
-
 </body>
 </html>
