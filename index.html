@@ -108,6 +108,11 @@ tr td:last-child{
   border:1px solid #a5d6a7;
   cursor:grab;
 }
+.picker{
+  overscroll-behavior: none;
+  scroll-behavior: auto;          /* ปิด smooth */
+  touch-action: pan-y;            /* ล็อกแนวตั้ง */
+}
 
 .picker.dragging{ cursor:grabbing; }
 .picker::-webkit-scrollbar{ display:none; }
@@ -272,6 +277,31 @@ function snapToActive(picker, items){
       a.offsetTop - picker.clientHeight/2 + a.offsetHeight/2;
   }
 }
+function enableDetentScroll(picker, items, onChange){
+  let index = items.findIndex(i=>i.classList.contains("active"));
+  let lock = false;
+
+  picker.addEventListener("wheel", e=>{
+    e.preventDefault();
+    if(lock) return;
+
+    lock = true;
+    index += e.deltaY > 0 ? 1 : -1;
+    index = Math.max(0, Math.min(items.length-1, index));
+
+    items.forEach(i=>i.classList.remove("active"));
+    items[index].classList.add("active");
+
+    picker.scrollTop =
+      items[index].offsetTop -
+      picker.clientHeight/2 +
+      items[index].offsetHeight/2;
+
+    onChange(+items[index].dataset.value);
+
+    setTimeout(()=>lock=false, 120); // จังหวะเฟือง
+  }, { passive:false });
+}
 
 /* ==================================================
    2) Constants / State
@@ -414,6 +444,18 @@ const ones  = [...onesP.querySelectorAll(".picker-item")];
 
 let t = 1, o = 7;
 
+enableDetentScroll(sp, sItems, v=>{
+  hiddenStation.value = "s"+v;
+  render();
+});
+enableDetentScroll(tensP, tens, v=>{
+  t = v;
+  updateAge();
+});
+enableDetentScroll(onesP, ones, v=>{
+  o = v;
+  updateAge();
+});
 function scrollTo(p, items, val){
   const it = items.find(x=>+x.dataset.value===val);
   if(it){
