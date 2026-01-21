@@ -6,6 +6,9 @@
 <title>เกณฑ์การทดสอบสมรรถภาพร่างกาย 2569</title>
 
 <style>
+/* ===============================
+   Base Layout
+=============================== */
 body{
   font-family:"Segoe UI",Tahoma,sans-serif;
   background:linear-gradient(135deg,#dff3e6,#cce8d8);
@@ -13,124 +16,112 @@ body{
   padding:20px;
 }
 .card{
-  background:rgba(255,255,255,0.75);
-  backdrop-filter:blur(8px);
-  border-radius:16px;
-  padding:25px;
   max-width:900px;
   margin:auto;
-  box-shadow:0 8px 24px rgba(0,0,0,0.15);
-}
-h2{
-  text-align:center;
-  color:#1b5e20;
-  background:linear-gradient(to bottom,#e8f5e9,#b9e3c6);
-  padding:12px;
-  border-radius:12px;
-}
-label{
-  display:block;
-  text-align:center;
-  margin-top:15px;
-  font-weight:600;
-  color:#2e7d32;
-}
-select,
-input{
-  width:100%;
-  box-sizing: border-box;
-  text-align:center;
-  padding:12px;
-  margin-top:6px;
-  border-radius:10px;
-  border:1px solid #a5d6a7;
-  background:linear-gradient(to bottom,#fff,#eaf6ee);
-  font-size:16px;
+  padding:22px;
+  border-radius:16px;
+  background:rgba(255,255,255,.75);
+  backdrop-filter:blur(8px);
+  box-shadow:0 8px 24px rgba(0,0,0,.15);
 }
 
+/* ===============================
+   Table (Result)
+=============================== */
 table{
   width:100%;
+  margin-top:18px;
   border-collapse:collapse;
-  margin-top:20px;
+  background:#fff;
+  border-radius:10px;
+  overflow:hidden;
 }
 th,td{
   border:1px solid #ccc;
   padding:8px;
   text-align:center;
-  white-space: nowrap;      /* ⭐ ไม่ให้ขึ้นบรรทัดใหม่ */
-  font-size: 14px;          /* ⭐ พอดีจอมือถือ */
+  white-space:nowrap;
+  font-size:14px;
 }
-th{background:#c8e6c9;}
-.fail{color:#c62828;font-weight:bold;}
-.p70{color:#2e7d32;font-weight:bold;}
-.p80{color:#0277bd;font-weight:bold;}
-.p90{color:#6a1b9a;font-weight:bold;}
-.p100{color:#1b5e20;font-weight:bold;}
-/* ===== Picker Style ===== */
-.picker {
-  position: relative;
-  height: 150px;
-  overflow-y: scroll;
-  scroll-snap-type: y mandatory;
-  border-radius: 14px;
-  background: linear-gradient(to bottom,#f8fff9,#e3f3e8);
-  border: 1px solid #a5d6a7;
-}
+th{background:#c8e6c9}
 
-/* ซ่อน scrollbar */
-.picker::-webkit-scrollbar {
-  display: none;
-}
+.fail  {background:#fdecea}
+.p70   {background:#e8f5e9}
+.p80   {background:#e3f2fd}
+.p90   {background:#f3e5f5}
+.p100  {background:#c8e6c9;font-size:15px}
 
-.picker-item {
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  scroll-snap-align: center;
-  font-size: 16px;
-  color: #777;
-  user-select: none;
+/* ===============================
+   Picker (Station / Age)
+=============================== */
+.picker{
+  position:relative;
+  height:150px;
+  overflow-y:auto;
+  scroll-snap-type:y mandatory;
+  border-radius:14px;
+  background:linear-gradient(#f8fff9,#e3f3e8);
+  border:1px solid #a5d6a7;
+  cursor:grab;
 }
+.picker.dragging{cursor:grabbing}
+.picker::-webkit-scrollbar{display:none}
 
-/* ตัวที่ถูกเลือก */
-.picker-item.active {
-  background: rgba(255,255,255,0.9);
-  color: #1b5e20;
-  font-weight: bold;
-  border-radius: 10px;
+.picker-item,
+.picker-spacer{
+  height:50px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  scroll-snap-align:center;
+}
+.picker-item{
+  font-size:16px;
+  color:#777;
+  user-select:none;
+}
+.picker-item.active{
+  color:#1b5e20;
+  font-weight:700;
+  background:rgba(255,255,255,.9);
+  border-radius:10px;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.8),
-    0 4px 12px rgba(0,0,0,0.15);
+    inset 0 1px 0 rgba(255,255,255,.8),
+    0 4px 12px rgba(0,0,0,.15);
 }
 
-/* เส้นไฮไลต์ตรงกลาง (Vista style) */
+/* Center highlight (Vista style) */
 .picker::before,
-.picker::after {
+.picker::after{
   content:"";
   position:absolute;
-  left:0; right:0;
+  left:0;right:0;
   height:50px;
   pointer-events:none;
 }
-.picker::before {
+.picker::before{
   top:0;
-  background: linear-gradient(to bottom, #e3f3e8, transparent);
+  background:linear-gradient(to bottom,#e3f3e8,transparent);
 }
-.picker::after {
+.picker::after{
   bottom:0;
-  background: linear-gradient(to top, #e3f3e8, transparent);
+  background:linear-gradient(to top,#e3f3e8,transparent);
 }
-/* spacer บน–ล่าง สำหรับ picker */
-.picker-spacer {
-  height: 50px; /* เท่ากับ picker-item */
-  scroll-snap-align: center;
+
+/* ===============================
+   Alert
+=============================== */
+.alert{
+  margin-top:18px;
+  padding:14px;
+  border-radius:10px;
+  text-align:center;
+  font-weight:700;
 }
-.picker {
-  cursor: grab;
-}
-.picker.dragging {
-  cursor: grabbing;
+.alert-error{
+  color:#b71c1c;
+  background:#fdecea;
+  border:1px solid #f5c6cb;
 }
 
 </style>
@@ -138,13 +129,9 @@ th{background:#c8e6c9;}
 
 <body>
 <div class="card">
-<h2>เกณฑ์การทดสอบ<br>สมรรถภาพร่างกาย</h2>
 
-<label>เลือกสถานี</label>
-
+  <!-- Picker สถานี (ไม่มี label) -->
 <div class="picker" id="stationPicker">
-
-  <!-- spacer บน -->
   <div class="picker-spacer"></div>
 
   <div class="picker-item" data-value="s1">สถานีที่ 1 งอเข่าครึ่งนั่ง ยกบาร์น้ำหนัก</div>
@@ -162,7 +149,7 @@ th{background:#c8e6c9;}
 <!-- ค่าที่เลือกจริง (ซ่อน) -->
 <input type="hidden" id="station" value="s1">
 
-<label>เลือกอายุผู้เข้ารับการทดสอบ</label>
+<label>อายุผู้เข้ารับการทดสอบ</label>
 
 <div style="display:flex; gap:10px;">
   <!-- หลักสิบ -->
@@ -195,38 +182,73 @@ th{background:#c8e6c9;}
 </div>
 
 <input type="hidden" id="age" value="">
+<div id="summary" style="
+  text-align:center;
+  font-size:14px;
+  color:#555;
+  margin-top:10px;
+"></div>
 
 <div id="result"></div>
+<button id="resetBtn" style="
+  position:fixed;
+  right:16px;
+  bottom:16px;
+  padding:10px 14px;
+  border-radius:50%;
+  border:none;
+  background:#4caf50;
+  color:white;
+  font-size:14px;
+">
+↺
+</button>
+<link rel="manifest" href="manifest.json">
+
 </div>
 
 <script>
 /* ==================================================
-   1) Utility: Mouse Drag
+   1) Utilities
 ================================================== */
 function enableMouseDrag(p){
-  let d=false,y,s;
+  let down=false,y,s;
   p.addEventListener("mousedown",e=>{
-    d=true;p.classList.add("dragging");
+    down=true;p.classList.add("dragging");
     y=e.pageY-p.offsetTop;s=p.scrollTop;
   });
   ["mouseup","mouseleave"].forEach(ev=>{
-    document.addEventListener(ev,()=>{d=false;p.classList.remove("dragging");});
+    document.addEventListener(ev,()=>{down=false;p.classList.remove("dragging");});
   });
   p.addEventListener("mousemove",e=>{
-    if(!d)return;
+    if(!down)return;
     e.preventDefault();
     p.scrollTop=s-(e.pageY-p.offsetTop-y);
   });
 }
 
+function snapToActive(picker, items){
+  const a = items.find(i=>i.classList.contains("active"));
+  if(a){
+    picker.scrollTop =
+      a.offsetTop - picker.clientHeight/2 + a.offsetHeight/2;
+  }
+}
+
 /* ==================================================
-   2) Constants / Data
+   2) Constants / State
 ================================================== */
 const ageGroups=[
  [17,21],[22,26],[27,31],[32,36],
  [37,41],[42,46],[47,51],[52,60]
 ];
 
+const hiddenAge=document.getElementById("age");
+const hiddenStation=document.getElementById("station");
+const result=document.getElementById("result");
+const summary=document.getElementById("summary");
+
+/* ===== data s1–s6 (ของคุณเดิม) ===== */
 const data={
 /* ===== สถานี 1 ===== */
 s1:{unit:"น้ำหนัก",values:{
@@ -279,28 +301,43 @@ s6:{unit:"เวลา",values:{
 };
 
 /* ==================================================
-   3) Render
+   3) Render (ตัวเดียวเท่านั้น)
 ================================================== */
-const hiddenAge=document.getElementById("age");
-const hiddenStation=document.getElementById("station");
-const result=document.getElementById("result");
-
 function render(){
-  const age=+hiddenAge.value, st=hiddenStation.value;
-  if(!age||!st||!data[st]){result.innerHTML="";return;}
+  const age=+hiddenAge.value;
+  const st=hiddenStation.value;
+
+  if(!age || !st || !data[st]){
+    result.innerHTML="";
+    return;
+  }
 
   const idx=ageGroups.findIndex(g=>age>=g[0]&&age<=g[1]);
-  if(idx<0){result.innerHTML="<p style='color:red'>อายุอยู่นอกเกณฑ์</p>";return;}
-
-  let h=`<table><tr><th>เปอร์เซ็นต์ผ่านเกณฑ์</th><th>จำนวน/เวลา</th></tr>`;
-  for(const k in data[st].values){
-    const c=k==="ไม่ผ่านเกณฑ์"?"fail":
-            k==="เกณฑ์ผ่าน 70%"?"p70":
-            k==="เกณฑ์ผ่าน 80%"?"p80":
-            k==="เกณฑ์ผ่าน 90%"?"p90":"p100";
-    h+=`<tr><td class="${c}">${k}</td><td>${data[st].values[k][idx]}</td></tr>`;
+  if(idx<0){
+    result.innerHTML="";
+    return;
   }
-  result.innerHTML=h+"</table>";
+
+  summary.textContent =
+    `สถานี ${st.replace("s","")} • อายุ ${age} ปี`;
+
+  let html=`<table>
+    <tr><th>เปอร์เซ็นต์ผ่านเกณฑ์</th><th>จำนวน/เวลา</th></tr>`;
+
+  for(const k in data[st].values){
+    const cls=
+      k==="ไม่ผ่านเกณฑ์"?"fail":
+      k==="เกณฑ์ผ่าน 70%"?"p70":
+      k==="เกณฑ์ผ่าน 80%"?"p80":
+      k==="เกณฑ์ผ่าน 90%"?"p90":"p100";
+
+    html+=`<tr>
+      <td class="${cls}">${k}</td>
+      <td>${data[st].values[k][idx]}</td>
+    </tr>`;
+  }
+
+  result.innerHTML=html+"</table>";
 }
 
 /* ==================================================
@@ -317,6 +354,7 @@ function syncStation(){
       i.classList.add("active");
       hiddenStation.value=i.dataset.value;
       render();
+      setTimeout(()=>snapToActive(sp,sItems),60);
     }
   });
 }
@@ -327,23 +365,44 @@ hiddenStation.value=sItems[0].dataset.value;
 enableMouseDrag(sp);
 
 /* ==================================================
-   5) Age Picker (2 Columns)
+   5) Age Picker (2 Columns + Lock 17–60)
 ================================================== */
 const tensP=document.getElementById("ageTensPicker");
 const onesP=document.getElementById("ageOnesPicker");
 const tens=[...tensP.querySelectorAll(".picker-item")];
 const ones=[...onesP.querySelectorAll(".picker-item")];
 
-let t=1,o=7; // 17 ปี
+let t=1,o=7;
+
+function scrollTo(p,items,val){
+  const it=items.find(x=>+x.dataset.value===val);
+  if(it){
+    p.scrollTop=it.offsetTop-p.clientHeight/2+it.offsetHeight/2;
+  }
+}
+
+function lockOnes(lock){
+  ones.forEach(i=>{
+    if(lock && i.dataset.value!=="0"){
+      i.style.opacity="0.3";
+      i.style.pointerEvents="none";
+    }else{
+      i.style.opacity="";
+      i.style.pointerEvents="";
+    }
+  });
+}
 
 function updateAge(){
-  const a=t*10+o;
-  if(a<17||a>60)return;
-  hiddenAge.value=a;
+  if(t===1 && o<7){ o=7; scrollTo(onesP,ones,7); }
+  if(t===6){ o=0; scrollTo(onesP,ones,0); lockOnes(true); }
+  else{ lockOnes(false); }
+
+  hiddenAge.value=t*10+o;
   render();
 }
 
-function sync(p,items,set){
+function syncAge(p,items,set){
   const c=p.scrollTop+p.clientHeight/2;
   items.forEach(i=>{
     if(Math.abs(c-(i.offsetTop+i.offsetHeight/2))<i.offsetHeight/2){
@@ -351,24 +410,63 @@ function sync(p,items,set){
       i.classList.add("active");
       set(+i.dataset.value);
       updateAge();
+      setTimeout(()=>snapToActive(p,items),60);
     }
   });
 }
 
-tensP.addEventListener("scroll",()=>requestAnimationFrame(()=>sync(tensP,tens,v=>t=v)));
-onesP.addEventListener("scroll",()=>requestAnimationFrame(()=>sync(onesP,ones,v=>o=v)));
+tensP.addEventListener("scroll",()=>requestAnimationFrame(()=>syncAge(tensP,tens,v=>t=v)));
+onesP.addEventListener("scroll",()=>requestAnimationFrame(()=>syncAge(onesP,ones,v=>o=v)));
 
 tens[0].classList.add("active");
 ones[7].classList.add("active");
 hiddenAge.value=17;
+render();
 
 enableMouseDrag(tensP);
 enableMouseDrag(onesP);
+
+/* ==================================================
+   6) Optional Enhancements
+================================================== */
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js");
+}
+/* ===============================
+   Reset Button
+=============================== */
+const resetBtn = document.getElementById("resetBtn");
+
+resetBtn.addEventListener("click", () => {
+
+  /* ===== reset สถานี ===== */
+  const firstStation = sItems[0];
+  sItems.forEach(i => i.classList.remove("active"));
+  firstStation.classList.add("active");
+  hiddenStation.value = firstStation.dataset.value;
+  sp.scrollTop =
+    firstStation.offsetTop - sp.clientHeight/2 + firstStation.offsetHeight/2;
+
+  /* ===== reset อายุ = 17 ===== */
+  t = 1;
+  o = 7;
+  hiddenAge.value = 17;
+
+  tens.forEach(i => i.classList.remove("active"));
+  ones.forEach(i => i.classList.remove("active"));
+  tens[0].classList.add("active");
+  ones[7].classList.add("active");
+
+  scrollTo(tensP, tens, 1);
+  scrollTo(onesP, ones, 7);
+  lockOnes(false);
+
+  /* ===== reset ผลลัพธ์ ===== */
+  result.innerHTML = "";
+  render();
+});
+
 </script>
 
 </body>
 </html>
-
-
-
-
